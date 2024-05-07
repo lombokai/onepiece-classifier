@@ -1,5 +1,5 @@
 import torch
-from predict import predict
+from src.onepiece_classify.infer.predict import predict
 
 
 model_path = "src/checkpoint/checkpoint_notebook.pth"

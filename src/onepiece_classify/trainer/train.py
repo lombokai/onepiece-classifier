@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 from torchvision import transforms
-from data_setup import create_dataloaders
-from build_model import create_model
-from engine import train
+from src.onepiece_classify.data.data_setup import create_dataloaders
+from src.onepiece_classify.models.build_model import create_model
+from src.onepiece_classify.trainer.engine import train
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
