@@ -1,3 +1,8 @@
+# ignore dataset
+raw_data/*
+src/data/train/*
+src/data/val/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
