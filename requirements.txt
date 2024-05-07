@@ -4,3 +4,4 @@ pyarrow
 seaborn
 matplotlib
 jupyter
+pytest
