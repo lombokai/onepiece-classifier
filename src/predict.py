@@ -3,7 +3,7 @@ import torch.nn as nn
 from torchvision import transforms
 
 from PIL import Image
-from build_model import create_model
+from src.build_model import create_model
 
 
 class_names = [
