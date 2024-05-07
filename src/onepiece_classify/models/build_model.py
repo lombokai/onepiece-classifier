@@ -3,20 +3,33 @@ import torch.nn as nn
 from torchvision import models
 
 
-def create_model(
-    num_classes: int,
-    seed: int=42
-):
-    model = models.mobilenet_v3_large(weights="DEFAULT")
+class ImageRecogModel(nn.Module):
+    
+    def __init__(self, num_classes):
+        super().__init__()
 
-    for param in model.parameters():
-        param.required_grad = False
+        self.num_classes = num_classes
+        self.backbone = self._build_backbone()
+        self.in_features = self._build_backbone().classifier[0].in_features
+        self.backbone.classifier = nn.Sequential(
+            nn.Dropout(p=0.2),
+            nn.Linear(self.in_features, out_features=self.num_classes)
+        )
 
-    # change model head
-    torch.manual_seed(seed)
-    model.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(in_features=960, out_features=num_classes)
-    )
+        # self.dropout = nn.Dropout(0.2)
 
-    return model
+    def _build_backbone(self):
+        model = models.mobilenet_v3_large(weights="DEFAULT")
+
+        for param in model.parameters():
+            param.requires_grad = False
+        
+        return model
+
+    def forward(self, x):
+        x = self.backbone(x)        
+        return x
+
+def image_recog(num_classes):
+    net = ImageRecogModel(num_classes)
+    return net
