@@ -9,11 +9,12 @@ def get_train_transforms():
         transforms.RandomRotation(10),
         transforms.ToTensor(),
         transforms.Normalize(
-            mean = [0.485, 0.456, 0.406], 
-            std = [0.229, 0.224, 0.225],
+            mean=[0.485, 0.456, 0.406], 
+            std=[0.229, 0.224, 0.225],
         )
     ])
     return trans
+
 
 def get_valid_transforms():
     trans = transforms.Compose([
@@ -21,12 +22,13 @@ def get_valid_transforms():
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         transforms.Normalize(
-            mean = [0.485, 0.456, 0.406],
-            std = [0.229, 0.224, 0.225]
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
         )
     ])
 
     return trans
+
 
 def get_test_transforms():
 
@@ -35,8 +37,8 @@ def get_test_transforms():
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         transforms.Normalize(
-            mean = [0.485, 0.456, 0.406],
-            std = [0.229, 0.224, 0.225]
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
         )
     ])
 
