@@ -67,6 +67,3 @@ class OnepieceImageDataLoader:
         )
 
         return loader
-
-
-

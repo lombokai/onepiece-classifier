@@ -15,7 +15,8 @@ class Trainer:
         max_epochs: int,
         loss_fn: nn.Module,
         optim: torch.optim.Optimizer,
-        learning_rate: float
+        learning_rate: float,
+        device: str = 'cuda',
     ):
 
         self.max_epochs = max_epochs
@@ -27,9 +28,12 @@ class Trainer:
         self._train_acc = []
         self._val_loss = []
         self._val_acc = []
+        self.device = device
 
     def train_step(self, batch, batch_idx: int = None):
         X, y = batch
+        X = X.to(self.device)
+        y = y.to(self.device)
         output = self.model(X)
 
         loss = self.loss_fn(output, y)
@@ -46,6 +50,8 @@ class Trainer:
 
     def val_step(self, batch, batch_idx: int=None):
         X, y = batch
+        X = X.to(self.device)
+        y = y.to(self.device)
         output = self.model(X)
 
         loss = self.loss_fn(output, y)
@@ -104,7 +110,7 @@ class Trainer:
     #     torch.save(self.model.state_dict(), path_to_save)
 
     def fit(self, model: nn.Module, loader: DataLoader) -> Dict[str, float]:
-        self.model = model
+        self.model = model.to(self.device)
         self.loader = loader
         self.run()
         # self.save_model()
