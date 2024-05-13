@@ -31,6 +31,7 @@ class Trainer:
         self.device = device
 
     def train_step(self, batch, batch_idx: int = None):
+        print(f'run step with batch_idx: {batch_idx}')
         X, y = batch
         X = X.to(self.device)
         y = y.to(self.device)
@@ -64,6 +65,7 @@ class Trainer:
 
     def train_batch(self, epoch: int=None):
         self.model.train()
+        print(f'run batch with epoch {epoch}')
 
         self.train_loss = 0
         self.train_acc = 0
