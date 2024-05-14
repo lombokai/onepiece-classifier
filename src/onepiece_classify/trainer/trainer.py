@@ -76,13 +76,15 @@ class Trainer:
         # print(f'run batch with epoch {epoch}')
 
         train_loss, train_acc = 0, 0
-        for batch_idx, batch in enumerate(self.loader.train_loader):
-            _loss, _acc = self.train_step(batch=batch, batch_idx=batch_idx)
-            train_loss += _loss
-            train_acc += _acc
 
-            pbar.update(1)
-            pbar.set_postfix({"train_loss": _loss})
+        with tqdm(total=len(self.loader.train_loader), desc="Training", leave=False) as pbar:
+            for batch_idx, batch in enumerate(self.loader.train_loader):
+                _loss, _acc = self.train_step(batch=batch, batch_idx=batch_idx)
+                train_loss += _loss
+                train_acc += _acc
+
+                pbar.update(1)
+                pbar.set_postfix({"loss": _loss})
 
         avg_loss = train_loss/len(self.loader.train_loader)
         avg_acc = train_acc/len(self.loader.train_loader)
@@ -93,11 +95,15 @@ class Trainer:
         self.model.eval()
 
         val_loss, val_acc = 0, 0
-        with torch.no_grad():
-            for batch_idx, batch in enumerate(self.loader.valid_loader):
-                _loss, _acc = self.val_step(batch=batch, batch_idx=batch_idx)
-                val_loss += _loss
-                val_acc += _acc
+        with tqdm(total=len(self.loader.valid_loader), desc="Validation", leave=False) as pbar:
+            with torch.no_grad():
+                for batch_idx, batch in enumerate(self.loader.valid_loader):
+                    _loss, _acc = self.val_step(batch=batch, batch_idx=batch_idx)
+                    val_loss += _loss
+                    val_acc += _acc
+
+                    pbar.update(1)
+                    pbar.set_postfix({"loss": _loss})
 
         avg_loss = val_loss/len(self.loader.valid_loader)
         avg_acc = val_acc/len(self.loader.valid_loader)
@@ -108,7 +114,7 @@ class Trainer:
         
         total_steps = self.max_epochs * len(self.loader.train_loader)
 
-        with tqdm(total=total_steps, desc="Training") as pbar:
+        with tqdm(total=total_steps, desc="Epochs") as pbar:
             for epoch in range(self.max_epochs):
                 print(f"Epoch {epoch+1}/{self.max_epochs}")
                 self.train_loss, self.train_acc = self.train_batch(epoch)
@@ -124,6 +130,10 @@ class Trainer:
                     self.best_val_loss = self.val_loss
 
                     self.save_model(self.path_to_save)
+
+                pbar.update(1)
+                pbar.set_postfix({'train_loss': self.train_loss, 'val_loss': self.val_loss})
+    
 
     def save_model(self, path_to_save):
         self.path_to_save = path_to_save
