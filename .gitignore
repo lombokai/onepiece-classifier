@@ -1,7 +1,7 @@
 # ignore dataset
 raw_data/*
-# src/data/train/*
-# src/data/val/*
+data/train/*
+data/val/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -166,4 +166,4 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-data/
+# data/
