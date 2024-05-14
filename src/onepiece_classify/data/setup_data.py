@@ -7,6 +7,7 @@ from onepiece_classify.transforms import (
 )
 from pathlib import Path
 
+
 class OnepieceImageDataLoader:
     def __init__(
         self,
@@ -67,6 +68,3 @@ class OnepieceImageDataLoader:
         )
 
         return loader
-
-
-
