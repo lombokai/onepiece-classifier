@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 import numpy as np
 from typing import Dict
-from tqdm.auto import tqdm
+from tqdm import tqdm
 
 
 class Trainer:
@@ -23,15 +23,23 @@ class Trainer:
         self.loss_fn = loss_fn
         self.optim = optim
         self.learning_rate = learning_rate
+        self.device = device
         
         self._train_loss = []
         self._train_acc = []
         self._val_loss = []
         self._val_acc = []
-        self.device = device
+        
+        self.train_loss = 0
+        self.train_acc = 0
+        self.val_loss = 0
+        self.val_acc = 0
+
+        self.best_train_loss = float("inf")
+        self.best_val_loss = float("inf")
 
     def train_step(self, batch, batch_idx: int = None):
-        print(f'run step with batch_idx: {batch_idx}')
+        # print(f'run step with batch_idx: {batch_idx}')
         X, y = batch
         X = X.to(self.device)
         y = y.to(self.device)
@@ -53,8 +61,8 @@ class Trainer:
         X, y = batch
         X = X.to(self.device)
         y = y.to(self.device)
-        output = self.model(X)
 
+        output = self.model(X)
         loss = self.loss_fn(output, y)
         val_loss = loss.item()
 
@@ -65,54 +73,63 @@ class Trainer:
 
     def train_batch(self, epoch: int=None):
         self.model.train()
-        print(f'run batch with epoch {epoch}')
+        # print(f'run batch with epoch {epoch}')
 
-        self.train_loss = 0
-        self.train_acc = 0
+        train_loss = 0
+        train_acc = 0
         for batch_idx, batch in enumerate(self.loader.train_loader):
             _loss, _acc = self.train_step(batch=batch, batch_idx=batch_idx)
-            self.train_loss += _loss
-            self.train_acc += _acc
+            train_loss += _loss
+            train_acc += _acc
 
-        avg_loss = self.train_loss/len(self.loader.train_loader)
-        avg_acc = self.train_acc/len(self.loader.train_loader)
+        avg_loss = train_loss/len(self.loader.train_loader)
+        avg_acc = train_acc/len(self.loader.train_loader)
         
         return avg_loss, avg_acc
-
 
     def val_batch(self, epoch: int=None):
         self.model.eval()
 
-        self.val_loss = 0
-        self.val_acc = 0
+        val_loss = 0
+        val_acc = 0
         with torch.no_grad():
             for batch_idx, batch in enumerate(self.loader.valid_loader):
                 _loss, _acc = self.val_step(batch=batch, batch_idx=batch_idx)
-                self.val_loss += _loss
-                self.val_acc += _acc
+                val_loss += _loss
+                val_acc += _acc
 
-        avg_loss = self.val_loss/len(self.loader.valid_loader)
-        avg_acc = self.val_acc/len(self.loader.valid_loader)
+        avg_loss = val_loss/len(self.loader.valid_loader)
+        avg_acc = val_acc/len(self.loader.valid_loader)
 
         return avg_loss, avg_acc
 
     def run(self):
 
-        for epoch in tqdm(range(self.max_epochs)):
-            train_epoch_loss = self.train_batch(epoch)
-            val_epoch_loss = self.val_batch(epoch)
+        with tqdm(total=self.max_epochs, desc="Epochs") as bar:
+            for epoch in tqdm(range(self.max_epochs)):
+                self.train_loss, self.train_acc = self.train_batch(epoch)
+                self.val_loss, self.val_acc = self.val_batch(epoch)
 
-            self._train_loss.append(train_epoch_loss)
-            self._val_loss.append(val_epoch_loss)
+                self._train_loss.append(self.train_loss)
+                self._val_loss.append(self.val_loss)
+                self._train_acc.append(self.train_acc)
+                self._val_acc.append(self.val_acc)
 
-            self._train_acc.append(train_epoch_loss)
-            self._val_acc.append(val_epoch_loss)
+                if self.train_loss < self.best_train_loss and self.val_loss < self.best_val_loss:
+                    self.best_train_loss = self.train_loss
+                    self.best_val_loss = self.val_loss
 
-    # def save_model(self, path_to_save):
-    #     torch.save(self.model.state_dict(), path_to_save)
+                    self.save_model(self.path_to_save)
+
+                bar.update(1)
+                bar.set_postfix({"train loss": self.train_loss, "val loss": self.val_loss})
+
+    def save_model(self, path_to_save):
+        self.path_to_save = path_to_save
+        torch.save(self.model.state_dict(), self.path_to_save)
+        print(f"[INFO] Save model with train loss: {self.train_loss}, and val loss: {self.val_loss}")
 
     def fit(self, model: nn.Module, loader: DataLoader) -> Dict[str, float]:
         self.model = model.to(self.device)
         self.loader = loader
         self.run()
-        # self.save_model()
