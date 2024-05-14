@@ -29,5 +29,5 @@ class ImageRecogModel(nn.Module):
         return x
 
 def image_recog(num_classes):
-    net = ImageRecogModel(num_classes)
+    net = ImageRecogModel(num_classes).build_backbone()
     return net
