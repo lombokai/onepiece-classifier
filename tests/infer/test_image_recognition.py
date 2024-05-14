@@ -10,16 +10,12 @@ class TestImageRecognition(unittest.TestCase):
     def setUp(self) -> None:
         
         self.model_path = "checkpoint/checkpoint.pth"
-        self.data_path = "data"
         self.image_to_test = "data/test/Ace/212.png_inverted.png"
 
-        self.recog = ImageRecognition(
-            model_path = self.model_path,
-            data_path = self.data_path
-        )
+        self.recog = ImageRecognition(model_path = self.model_path)
 
         self.num_class = self.recog.nclass
-        self.name_class = self.recog.name_class
+        self.name_class = list(self.recog.class_dict.values())
 
 
     def test_preprocess(self):
