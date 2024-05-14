@@ -8,7 +8,7 @@ import torch
 class BaseInference(ABC):
     
     @abstractmethod
-    def pre_process(self, image: Optional[str, np.ndarray, Image])->torch.Tensor:
+    def pre_process(self, image: Optional[str|np.ndarray|Image.Image])->torch.Tensor:
         pass
     
     @abstractmethod
@@ -20,5 +20,5 @@ class BaseInference(ABC):
         pass
     
     @abstractmethod
-    def predict(self, image: Optional[str, np.ndarray, Image]) -> dict:
+    def predict(self, image: Optional[str|np.ndarray|Image.Image]) -> dict:
         pass
