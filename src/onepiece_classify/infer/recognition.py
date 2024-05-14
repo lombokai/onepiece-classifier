@@ -5,28 +5,41 @@ from pathlib import Path
 from .base import BaseInference
 from typing import Optional, Tuple, Dict
 
-from onepiece_classify.models import ImageRecogModel
-from onepiece_classify.data import OnepieceImageDataLoader
+from onepiece_classify.models import image_recog
 from onepiece_classify.transforms import get_test_transforms
 
 
 class ImageRecognition(BaseInference):
     
-    def __init__(self, model_path: str, data_path: str):
+    def __init__(self, model_path: str):
         self.model_path = Path(model_path)
-        self.data_path = Path(data_path)
-
         self.class_dict = {
-            i: val for val, i in OnepieceImageDataLoader(self.data_path).trainset.class_to_idx.items()
+            0: 'Ace',
+            1: 'Akainu',
+            2: 'Brook',
+            3: 'Chopper',
+            4: 'Crocodile',
+            5: 'Franky',
+            6: 'Jinbei',
+            7: 'Kurohige',
+            8: 'Law',
+            9: 'Luffy',
+            10: 'Mihawk',
+            11: 'Nami',
+            12: 'Rayleigh',
+            13: 'Robin',
+            14: 'Sanji',
+            15: 'Shanks',
+            16: 'Usopp',
+            17: 'Zoro',
         }
-        self.name_class = OnepieceImageDataLoader(self.data_path).trainset.classes
-        self.nclass = len(self.name_class)
-        # self.model = self._build_model()
+        self.nclass = len(self.class_dict)
+        self.model = self._build_model()
         
     def _build_model(self):
          # load model
         state_dict = torch.load(self.model_path)
-        model_backbone = ImageRecogModel(self.nclass).build_backbone()
+        model_backbone = image_recog(self.nclass)
         model_backbone.load_state_dict(state_dict)
         return model_backbone
     
@@ -53,10 +66,9 @@ class ImageRecognition(BaseInference):
         return img
 
     def forward(self, image_tensor: torch.Tensor) -> torch.Tensor:
-        model = self._build_model()
-        model.eval()
+        self.model.eval()
 
-        result = model(image_tensor)
+        result = self.model(image_tensor)
         return result
     
     def post_process(self, output: torch.Tensor) -> Tuple[str, float]:
