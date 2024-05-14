@@ -12,7 +12,7 @@ from onepiece_classify.models import image_recog
 from onepiece_classify.data import OnepieceImageDataLoader
 
 
-class TestOnepieceImageDataLoader(unittest.TestCase):
+class TestTrainer(unittest.TestCase):
     def setUp(self):
         self.root_path = "data"
         self.batch_size = 32
