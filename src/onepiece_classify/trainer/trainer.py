@@ -75,12 +75,14 @@ class Trainer:
         self.model.train()
         # print(f'run batch with epoch {epoch}')
 
-        train_loss = 0
-        train_acc = 0
+        train_loss, train_acc = 0, 0
         for batch_idx, batch in enumerate(self.loader.train_loader):
             _loss, _acc = self.train_step(batch=batch, batch_idx=batch_idx)
             train_loss += _loss
             train_acc += _acc
+
+            pbar.update(1)
+            pbar.set_postfix({"train_loss": _loss})
 
         avg_loss = train_loss/len(self.loader.train_loader)
         avg_acc = train_acc/len(self.loader.train_loader)
@@ -90,8 +92,7 @@ class Trainer:
     def val_batch(self, epoch: int=None):
         self.model.eval()
 
-        val_loss = 0
-        val_acc = 0
+        val_loss, val_acc = 0, 0
         with torch.no_grad():
             for batch_idx, batch in enumerate(self.loader.valid_loader):
                 _loss, _acc = self.val_step(batch=batch, batch_idx=batch_idx)
@@ -104,9 +105,12 @@ class Trainer:
         return avg_loss, avg_acc
 
     def run(self):
+        
+        total_steps = self.max_epochs * len(self.loader.train_loader)
 
-        with tqdm(total=self.max_epochs, desc="Epochs") as bar:
-            for epoch in tqdm(range(self.max_epochs)):
+        with tqdm(total=total_steps, desc="Training") as pbar:
+            for epoch in range(self.max_epochs):
+                print(f"Epoch {epoch+1}/{self.max_epochs}")
                 self.train_loss, self.train_acc = self.train_batch(epoch)
                 self.val_loss, self.val_acc = self.val_batch(epoch)
 
@@ -120,9 +124,6 @@ class Trainer:
                     self.best_val_loss = self.val_loss
 
                     self.save_model(self.path_to_save)
-
-                bar.update(1)
-                bar.set_postfix({"train loss": self.train_loss, "val loss": self.val_loss})
 
     def save_model(self, path_to_save):
         self.path_to_save = path_to_save
