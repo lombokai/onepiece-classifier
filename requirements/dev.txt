@@ -1,6 +1,10 @@
-pytest==6.2.5
-pytest-pythonpath==0.7.4
-pre-commit==3.7.1
+autoflake==2.3.1
 black==24.4.2
 isort==5.13.2
-autoflake==2.3.1
+
+jupyter
+matplotlib
+pre-commit==3.7.1
+pytest==6.2.5
+pytest-pythonpath==0.7.4
+seaborn

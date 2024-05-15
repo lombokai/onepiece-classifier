@@ -1,8 +1,5 @@
 numpy
 pandas
 pyarrow
-seaborn
-matplotlib
-jupyter
 torch
 torchvision

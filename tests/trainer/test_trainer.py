@@ -1,15 +1,13 @@
+import unittest
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 from torch.optim import Adam
 
-import unittest
-from unittest.mock import MagicMock
-from torch.utils.data import DataLoader
-from pathlib import Path
-
-from onepiece_classify.trainer import Trainer
-from onepiece_classify.models import image_recog
 from onepiece_classify.data import OnepieceImageDataLoader
+from onepiece_classify.models import image_recog
+from onepiece_classify.trainer import Trainer
 
 
 class TestTrainer(unittest.TestCase):
@@ -21,9 +19,7 @@ class TestTrainer(unittest.TestCase):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         loader = OnepieceImageDataLoader(
-            self.root_path,
-            self.batch_size,
-            self.num_workers
+            self.root_path, self.batch_size, self.num_workers
         )
         self.nclass = len(loader.trainset.classes)
         model = image_recog(num_classes=self.nclass).to(self.device)
@@ -32,10 +28,7 @@ class TestTrainer(unittest.TestCase):
         loss_fn = nn.CrossEntropyLoss()
         optimizer = Adam(model.parameters(), lr=lrate)
         self.trainer = Trainer(
-            max_epochs = 2,
-            loss_fn = loss_fn,
-            optim = optimizer,
-            learning_rate = lrate
+            max_epochs=2, loss_fn=loss_fn, optim=optimizer, learning_rate=lrate
         )
 
         self.trainer.model = model
@@ -51,7 +44,7 @@ class TestTrainer(unittest.TestCase):
 
         self.assertTrue(isinstance(_loss, float))
         self.assertTrue(isinstance(_acc, float))
-        self.assertTrue(_loss > 0.)
+        self.assertTrue(_loss > 0.0)
 
     def test_val_step(self):
         fake_batch_x = torch.rand(1, 3, 224, 224).to(self.device)
@@ -62,14 +55,14 @@ class TestTrainer(unittest.TestCase):
 
         self.assertTrue(isinstance(_loss, float))
         self.assertTrue(isinstance(_acc, float))
-        self.assertTrue(_loss > 0.)
+        self.assertTrue(_loss > 0.0)
 
     def test_train_batch(self):
         _loss, _acc = self.trainer.train_batch()
 
         self.assertTrue(isinstance(_loss, float))
         self.assertTrue(isinstance(_acc, float))
-        self.assertTrue(_loss > 0.)
+        self.assertTrue(_loss > 0.0)
         self.assertTrue((_acc > 0) and (_acc < 1))
 
     def test_val_batch(self):
@@ -77,7 +70,7 @@ class TestTrainer(unittest.TestCase):
 
         self.assertTrue(isinstance(_loss, float))
         self.assertTrue(isinstance(_acc, float))
-        self.assertTrue(_loss > 0.)
+        self.assertTrue(_loss > 0.0)
         self.assertTrue((_acc > 0) and (_acc < 1))
 
     def test_init_and_run(self):
