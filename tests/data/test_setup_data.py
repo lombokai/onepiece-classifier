@@ -1,8 +1,8 @@
 import unittest
-from unittest.mock import MagicMock
-from torch.utils.data import DataLoader
-from onepiece_classify.data import OnepieceImageDataLoader
 from pathlib import Path
+
+from onepiece_classify.data import OnepieceImageDataLoader
+
 
 class TestOnepieceImageDataLoader(unittest.TestCase):
     def setUp(self):
@@ -11,9 +11,7 @@ class TestOnepieceImageDataLoader(unittest.TestCase):
         self.num_workers = 4
 
         self.loader = OnepieceImageDataLoader(
-            self.root_path,
-            self.batch_size,
-            self.num_workers
+            self.root_path, self.batch_size, self.num_workers
         )
 
     def test_init(self):
@@ -23,8 +21,7 @@ class TestOnepieceImageDataLoader(unittest.TestCase):
         self.assertEqual(self.loader.test_path, Path(self.root_path).joinpath("test"))
         self.assertEqual(self.loader.batch_size, self.batch_size)
         self.assertEqual(self.loader.num_workers, self.num_workers)
-    
-        
+
     def test_build_dataset_mode_test(self):
         expected_dataset = self.loader._build_dataset(mode="test")
         actual_dataset = self.loader.testset

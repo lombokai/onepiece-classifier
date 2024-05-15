@@ -1,20 +1,17 @@
+from pathlib import Path
+
+from torch.utils.data import DataLoader
 from torchvision import datasets
-from torch.utils.data import Dataset, DataLoader
+
 from onepiece_classify.transforms import (
+    get_test_transforms,
     get_train_transforms,
     get_valid_transforms,
-    get_test_transforms,
 )
-from pathlib import Path
 
 
 class OnepieceImageDataLoader:
-    def __init__(
-        self,
-        root_path: str, 
-        batch_size: int = 32, 
-        num_workers: int = 0
-    ):
+    def __init__(self, root_path: str, batch_size: int = 32, num_workers: int = 0):
         self.root_path: Path = Path(root_path)
         self.train_path: Path = self.root_path.joinpath("train")
         self.valid_path: Path = self.root_path.joinpath("val")
@@ -31,8 +28,7 @@ class OnepieceImageDataLoader:
         self.valid_loader = self._build_dataloader(mode="valid", shuffle=False)
         self.test_loader = self._build_dataloader(mode="test", shuffle=False)
 
-
-    def _build_dataset(self, mode='train') -> datasets.ImageFolder:
+    def _build_dataset(self, mode="train") -> datasets.ImageFolder:
         dset = None
         if mode == "train":
             trans = get_train_transforms()
@@ -46,11 +42,13 @@ class OnepieceImageDataLoader:
         else:
             trans = get_test_transforms()
             path = self.test_path
-        
+
         dset = datasets.ImageFolder(str(path), transform=trans)
         return dset
 
-    def _build_dataloader(self, mode: str = "train", shuffle: bool = True) -> DataLoader:
+    def _build_dataloader(
+        self, mode: str = "train", shuffle: bool = True
+    ) -> DataLoader:
         if mode == "train":
             dset = self.trainset
         elif mode == "valid":
@@ -61,10 +59,7 @@ class OnepieceImageDataLoader:
             dset = self.testset
 
         loader = DataLoader(
-            dset,
-            batch_size=self.batch_size,
-            shuffle=shuffle,
-            pin_memory=True
+            dset, batch_size=self.batch_size, shuffle=shuffle, pin_memory=True
         )
 
         return loader
