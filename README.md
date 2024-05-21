@@ -1,9 +1,6 @@
 # Machine Learning Project Documentation
 
 ## Project Overview
-# Machine Learning Project Documentation
-
-## Project Overview
 This repository contains programs for classifying images. The images used for this project are images of Onepiece anime characters. There are 18 predicted anime characters. This project is packaged in the form of a python package so that it can be used by the public.
 
 ## Installation Guide
@@ -58,18 +55,18 @@ pip install onepiece-classify
 
 acces predict method from onepiece-classify pakcage
 
-```sh
+```python
 from onepiece_classify.infer import ImageRecognition
 ```
 
 instantiate the class with your model path. Download trained model [here](https://drive.google.com/file/d/1M1-1Hs198XDD6Xx-kSWLThv1elZBzJ0j/view?usp=sharing) and make sure you specify model path parameter in the location of downloaded model
 
-```sh
+```python
 predictor = ImageRecognition(<model path>)
 ```
 
 then you just predict your image with `predict` method
-```sh
+```python
 predictor.predict(<your image path>)
 ```
 
