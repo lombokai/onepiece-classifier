@@ -7,10 +7,8 @@ def downloader(output_file):
     prefix = 'https://drive.google.com/uc?/export=download&id='
 
     url_download = prefix+file_id
-    filename = "checkpoint_notebook.pth"
-    if Path(output_file).joinpath(filename).exists():
-        print("The model has been downloaded")
-    else:
+    
+    if not Path(output_file).exists():
         print("Downloading...")
         gdown.download(url_download, output_file)
         print("Download Finish...")
