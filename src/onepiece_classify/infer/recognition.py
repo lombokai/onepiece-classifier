@@ -15,19 +15,17 @@ from .base import BaseInference
 
 
 class ImageRecognition(BaseInference):
-    def __init__(self, device: str, download: bool = True):
-        # self.model_path = Path(model_path)
-        self.model_path = self._get_cache_dir()
-        
-        if download:
-            downloader(str(self.model_path) + "/")
+    def __init__(self, device: str, model_path=None):
 
-        filename = "checkpoint_notebook.pth"
-        if (self.model_path.joinpath(filename)).exists():
-            self.model_path = self.model_path.joinpath("checkpoint_notebook.pth")
+        path_to_save = str(self._get_cache_dir()) + "/model.pth"
+        if model_path is None:
+            downloader(path_to_save)
+            self.model_path = path_to_save
         else:
-            raise FileNotFoundError("Model does not exist, set download parameter to True and read README for more information")
-        
+            self.model_path = Path(model_path)
+            if not self.model_path.exists():
+                raise FileNotFoundError("Model does not exist, check your model location and read README for more information")
+
         self.device = device
         self.class_dict = {
             0: "Ace",
