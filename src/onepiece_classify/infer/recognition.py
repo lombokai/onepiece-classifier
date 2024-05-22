@@ -1,3 +1,5 @@
+import os
+import sys
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -7,13 +9,25 @@ from PIL import Image
 
 from onepiece_classify.models import image_recog
 from onepiece_classify.transforms import get_test_transforms
+from onepiece_classify.utils import downloader
 
 from .base import BaseInference
 
 
 class ImageRecognition(BaseInference):
-    def __init__(self, model_path: str, device: str):
-        self.model_path = Path(model_path)
+    def __init__(self, device: str, download: bool = True):
+        # self.model_path = Path(model_path)
+        self.model_path = self._get_cache_dir()
+        
+        if download:
+            downloader(str(self.model_path) + "/")
+
+        filename = "checkpoint_notebook.pth"
+        if (self.model_path.joinpath(filename)).exists():
+            self.model_path = self.model_path.joinpath("checkpoint_notebook.pth")
+        else:
+            raise FileNotFoundError("Model does not exist, set download parameter to True and read README for more information")
+        
         self.device = device
         self.class_dict = {
             0: "Ace",
@@ -44,6 +58,15 @@ class ImageRecognition(BaseInference):
         model_backbone = image_recog(self.nclass)
         model_backbone.load_state_dict(state_dict)
         return model_backbone
+    
+    def _get_cache_dir(self):
+        if sys.platform.startswith("win"):
+            cache_dir = Path(os.getenv("LOCALAPPDATA", Path.home() / "AppData" / "Local")) / "OnepieceClassifyCache"
+        else:
+            cache_dir = Path.home() / ".cache" / "OnepieceClassifyCache"
+
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        return cache_dir
 
     def pre_process(
         self, image: Optional[str | np.ndarray | Image.Image]
