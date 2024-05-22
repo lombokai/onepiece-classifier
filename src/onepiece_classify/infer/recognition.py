@@ -12,8 +12,9 @@ from .base import BaseInference
 
 
 class ImageRecognition(BaseInference):
-    def __init__(self, model_path: str):
+    def __init__(self, model_path: str, device: str):
         self.model_path = Path(model_path)
+        self.device = device
         self.class_dict = {
             0: "Ace",
             1: "Akainu",
@@ -39,7 +40,7 @@ class ImageRecognition(BaseInference):
 
     def _build_model(self):
         # load model
-        state_dict = torch.load(self.model_path)
+        state_dict = torch.load(self.model_path, map_location=self.device)
         model_backbone = image_recog(self.nclass)
         model_backbone.load_state_dict(state_dict)
         return model_backbone
@@ -65,7 +66,7 @@ class ImageRecognition(BaseInference):
         else:
             print("Image type not recognized")
 
-        return img
+        return img.to(self.device)
 
     def forward(self, image_tensor: torch.Tensor) -> torch.Tensor:
         self.model.eval()
