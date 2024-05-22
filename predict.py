@@ -8,10 +8,11 @@ from onepiece_classify.infer import ImageRecognition
 
 def predict_image(
     image_path: str = typer.Argument(help="image path", show_default=True),
-    model_path: str = typer.Argument("checkpoint/checkpoint_notebook.pth", help="model path (pth)", show_default=True),
+    # model_path: str = typer.Argument("checkpoint_notebook.pth", help="model path (pth)", show_default=True),
+    download: bool = typer.Argument(True, help="True for download the model automatically", show_default=True),
     device: str = typer.Argument("cpu", help="use cuda if your device has cuda", show_default=True)
 ):
-    predictor = ImageRecognition(model_path=model_path, device=device)
+    predictor = ImageRecognition(download=download, device=device)
     result = predictor.predict(image=image_path)
     typer.echo(f"Prediction: {result}")
 
