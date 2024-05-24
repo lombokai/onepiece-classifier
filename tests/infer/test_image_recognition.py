@@ -1,6 +1,7 @@
-import torch
 import unittest
+
 import numpy as np
+import torch
 from PIL import Image
 
 from onepiece_classify.infer import ImageRecognition
@@ -8,15 +9,13 @@ from onepiece_classify.infer import ImageRecognition
 
 class TestImageRecognition(unittest.TestCase):
     def setUp(self) -> None:
-        
         self.model_path = "checkpoint/checkpoint.pth"
         self.image_to_test = "data/test/Ace/212.png_inverted.png"
 
-        self.recog = ImageRecognition(model_path = self.model_path)
+        self.recog = ImageRecognition(model_path=self.model_path)
 
         self.num_class = self.recog.nclass
         self.name_class = list(self.recog.class_dict.values())
-
 
     def test_preprocess(self):
         img_path = self.image_to_test
